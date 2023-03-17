@@ -4,13 +4,15 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "start:purge": "ts-node index.ts --purge"
   },
   "author": "Maloivan Oleksii",
   "license": "ISC",
   "dependencies": {
     "@aws-sdk/client-sqs": "^3.292.0",
     "aws-sdk": "^2.1336.0",
+    "fs": "^0.0.1-security",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {

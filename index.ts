@@ -4,6 +4,7 @@ import { AwsCredentialIdentity } from '@aws-sdk/types'
 import { AssumeRoleCommand } from "@aws-sdk/client-sts";
 import { SQS } from "@aws-sdk/client-sqs";
 import { config } from 'dotenv';
+import { existsSync, readFileSync } from "fs";
 config({path: './.env'});
 
 const REGION = process.env.AWS_REGION;
@@ -27,7 +28,7 @@ const assumeRole = async () => {
   }
 };
 
-(async () => {
+(async (arg) => {
   // create simple producer
   const producer = new SQS({
     endpoint: process.env.AWS_SQS_LINK,
@@ -35,38 +36,27 @@ const assumeRole = async () => {
     credentials: await assumeRole()
   })
 
+  if (arg.includes('--purge')) {
+    await producer.purgeQueue({ QueueUrl: process.env.AWS_SQS_LINK });
+    console.log('Queue purged successfully');
+    
+  } else {
+    const fIndex = arg.indexOf('--template');
+    let file;
+    if (fIndex > -1) {
+      const path = arg[fIndex + 1];
+      if (existsSync(path)) {
+        file = readFileSync(path).toString();
+      } else throw new Error('Template file is not exist')
+    } else throw new Error('Template file is required')
 
-  producer.sendMessage(
-    {
-      MessageBody: JSON.stringify({
-        user: 'Alexei',
-        owner: 'Kim Melcher',
-        project: 'Test project',
-        client: 'Test client',
-        task: 'TEst task',
-        milestone: 'Test stage',
-        due: 'Jun 23 2023',
-        view: 'https://qa.focalpointprocurement.com/projects/b39f8346-3a48-4a67-9f62-bca0f728de81/milestones/840ea618-3a67-4941-9417-6681ce0fb0fe/tasks/522a070f-c485-4811-ac27-29c87f80a0a1'
-      }),
-      MessageAttributes: {
-        channel: {
-          StringValue: 'slack',
-          DataType: 'String',
-        },
-        subject: {
-          StringValue: 'Task Assigned',
-          DataType: 'String',
-        },
-        template: {
-          StringValue: '88ac69ad-0cef-4e57-a166-fb88e290f09c',
-          DataType: 'String',
-        },
-        to: {
-          DataType: 'String',
-          StringValue: 'alexei@getfocalpoint.com'
-        },
-      },
-      QueueUrl: process.env.AWS_SQS_LINK
-    }
-  );
-})()
+    await producer.sendMessage(
+      Object.assign(
+        JSON.parse(file),
+        { QueueUrl: process.env.AWS_SQS_LINK }
+      )
+    );
+    console.log('The message sent');
+    
+  }
+})(process.argv)

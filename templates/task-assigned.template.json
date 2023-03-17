@@ -1,0 +1,21 @@
+{
+  "MessageBody": "{\"user\": \"Alexei\",\"owner\": \"Kim Melcher\",\"project\": \"Test project\",\"client\": \"Test client\",\"task\": \"TEst task\",\"milestone\": \"Test stage\",\"due\": \"Jun 23 2023\",\"view\": \"https://qa.focalpointprocurement.com/projects/b39f8346-3a48-4a67-9f62-bca0f728de81/milestones/840ea618-3a67-4941-9417-6681ce0fb0fe/tasks/522a070f-c485-4811-ac27-29c87f80a0a1\"}",
+  "MessageAttributes": {
+    "channel": {
+      "StringValue": "slack",
+      "DataType": "String"
+    },
+    "subject": {
+      "StringValue": "Task Assigned",
+      "DataType": "String"
+    },
+    "template": {
+      "StringValue": "88ac69ad-0cef-4e57-a166-fb88e290f09c",
+      "DataType": "String"
+    },
+    "to": {
+      "DataType": "String",
+      "StringValue": "alexei@getfocalpoint.com"
+    }
+  }
+}

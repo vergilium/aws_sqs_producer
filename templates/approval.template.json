@@ -1,0 +1,21 @@
+{
+  "MessageBody": "{\"approver\":\"Test approver\",\"project_owner\":\"Kim Melcher\",\"project_name\":\"Project_1\",\"departments\":\"Test department\",\"view\":\"https:\/\/qa.focalpointprocurement.com\/self\/required-approvals\"}",
+    "MessageAttributes": {
+    "channel": {
+      "StringValue": "slack",
+      "DataType": "String"
+    },
+    "subject": {
+      "StringValue": "Approval assigned",
+      "DataType": "String"
+    },
+    "template": {
+      "StringValue": "6b12eec8-d23d-4e36-ac60-366daf588ba1",
+      "DataType": "String"
+    },
+    "to": {
+      "DataType": "String",
+      "StringValue": "alexei@getfocalpoint.com"
+    }
+  }
+}
