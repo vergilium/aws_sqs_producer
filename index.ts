@@ -5,6 +5,7 @@ import { AssumeRoleCommand } from "@aws-sdk/client-sts";
 import { SQS } from "@aws-sdk/client-sqs";
 import { config } from 'dotenv';
 import { existsSync, readFileSync } from "fs";
+import { S3 } from "aws-sdk";
 config({path: './.env'});
 
 const REGION = process.env.AWS_REGION;
@@ -39,7 +40,24 @@ const assumeRole = async () => {
   if (arg.includes('--purge')) {
     await producer.purgeQueue({ QueueUrl: process.env.AWS_SQS_LINK });
     console.log('Queue purged successfully');
-    
+  } else if (arg.includes('--create')) {
+    const nIndex = arg.indexOf('--create');
+    if (nIndex > -1) {
+      const sqs = new SQS({
+        region: REGION,
+        credentials: await assumeRole()
+      })
+      await sqs.createQueue({ QueueName: arg[nIndex + 1] });
+      // const s3 = new S3({ region: REGION, credentials: await assumeRole() });
+      // await s3.createBucket({ Bucket: arg[nIndex + 1] }).promise()
+    } else throw new Error('Queue name is required');
+  } else if (arg.includes('--attributes')) { 
+    const result = await producer.getQueueAttributes({ QueueUrl: process.env.AWS_SQS_LINK, AttributeNames: ['All'] });
+    if (!result?.Attributes) throw new Error('Attributes not found');
+    console.log('SQS Attributes:');
+    for (const att in result.Attributes) {
+      console.log(`\x1b[36m${att}: \x1b[32m ${result.Attributes[att]}`);
+    }
   } else {
     const fIndex = arg.indexOf('--template');
     let file;
